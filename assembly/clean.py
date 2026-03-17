@@ -2,25 +2,19 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-# ==========================================================================
 # Data Loading
-# ==========================================================================
 
 ctrl = xr.load_dataset("data/raw/APPEARS_data/Control.nc")
 pali = xr.load_dataset("data/processed/palisades_ndvi_unclean.nc")
 
-# ==========================================================================
 # Standardize Formatting / Variable Names
-# ==========================================================================
 
 ctrl = ctrl.rename({
     "_250m_16_days_NDVI": "ndvi",
     "_250m_16_days_VI_Quality": "qa"
 })
 
-# ==========================================================================
 # Time Coordinate Fix (cftime -> datetime64[ns])
-# ==========================================================================
 
 def ensure_datetime(ds: xr.Dataset) -> xr.Dataset:
     t = ds["time"].values
@@ -41,9 +35,7 @@ pali = ensure_datetime(pali)
 
 print(ctrl["time"].dtype, pali["time"].dtype)
 
-# ==========================================================================
 # Quality-Control Rules (MOD13Q1 VI_Quality bitfield)
-# ==========================================================================
 
 def mod13q1_good_pixel_mask(qa_u16: xr.DataArray) -> xr.DataArray:
     """
@@ -67,9 +59,7 @@ def mod13q1_good_pixel_mask(qa_u16: xr.DataArray) -> xr.DataArray:
 
     return land & ok_modland & no_snow_shadow
 
-# ==========================================================================
 # Apply QC Masking
-# ==========================================================================
 
 # NDVI nodata is -3000
 ctrl["ndvi"] = ctrl["ndvi"].where(ctrl["ndvi"] != -3000)
@@ -96,9 +86,7 @@ print(pali)
 print("Control ds info:")
 print(ctrl)
 
-# ==========================================================================
 # Export
-# ==========================================================================
 
 DO_EXPORT = True
 
