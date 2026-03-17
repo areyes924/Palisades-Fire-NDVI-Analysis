@@ -1,4 +1,4 @@
-# Palisades Fire NDVI Analysis (2025)
+# Palisades Fire NDVI Analysis 
 
 
 
